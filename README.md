@@ -144,4 +144,3 @@ flutter pub get
 flutter run
 
 ### 9.3 AI API 키 설정
-flutter run --dart-define=FINNHUB_TOKEN=d49g8o9r01qshn3m6gt0d49g8o9r01qshn3m6gtg --dart-define=GEMINI_API_KEY=AIzaSyDHVOsskzvDvZbho6j6PzcvcASyeEKvSj0
