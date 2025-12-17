@@ -1,16 +1,147 @@
-# balrain
+# BALRAIN — AI 기반 주식 분석 앱 프로토타입
 
-A new Flutter project.
+BALRAIN은 Flutter 기반으로 제작된 **주식 분석 앱 프로토타입**으로,  
+사용자가 종목을 검색하고 차트를 확인한 뒤 **AI 기술 분석 모듈(1~5)**을 실행하면  
+그 결과를 바탕으로 **AI 종합 코멘트**를 제공하는 구조의 프로젝트입니다.
 
-## Getting Started
+본 저장소는 최종 과제 제출을 위한 **소스코드, 문서, 데모 기반 구현물**을 포함합니다.
 
-This project is a starting point for a Flutter application.
+---
 
-A few resources to get you started if this is your first Flutter project:
+## 1. 프로젝트 개요
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+### 1.1 프로젝트 목표
+- 종목 검색 → 차트 시각화 → 분석 실행까지의 **완결된 UX 흐름 구현**
+- 기술적 분석을 **모듈 단위**로 분리하여 설계
+- 실행된 모듈만을 반영하는 **AI 종합 분석 로직 구현**
+- 단순 AI 호출이 아닌, **프롬프트 설계 기반 구조화된 출력** 구현
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+---
+
+## 2. 전체 앱 흐름 (UX Flow)
+
+1. 앱 실행 → Splash 화면
+2. 메인 화면
+   - 종목 검색
+   - 오늘의 하이라이트 / 주요 뉴스 노출
+3. 종목 선택 → Ticker 화면
+4. 차트 확인 (일봉 / 인트라데이)
+5. 분석 모듈 실행 (1~5)
+6. 실행된 모듈 기준 AI 종합 코멘트 확인
+
+---
+
+## 3. 차트 및 기본 기능 구현
+
+### 3.1 차트 기능
+- 캔들 차트 기반 주가 시각화
+- 일봉 / 단기 봉 데이터 구분 표시
+- 차트 특정 지점을 터치하면 해당 시점의 주가 정보 확인 가능
+  - (시가 / 고가 / 저가 / 종가 개념)
+
+### 3.2 종목 검색
+- 검색창에 종목 입력 시 해당 종목 데이터 로드
+- 종목별 분석 화면으로 자연스럽게 전환
+
+---
+
+## 4. 뉴스 기능 (AI 분석 아님)
+
+- 현재 시장에서 **관심도가 높은 뉴스(핫 뉴스)** 수집
+- 뉴스 제목 + 원문 링크 제공
+- 각 뉴스 하단에 **연관 종목 리스트 표시**
+- 뉴스 클릭 시 외부 브라우저로 기사 원문 이동
+
+> ⚠️ 본 프로젝트에서는  
+> **뉴스 본문을 AI가 해석하거나 요약하지 않습니다.**  
+> 뉴스는 “시장 관심도 참고용 정보”로만 활용됩니다.
+
+---
+
+## 5. AI 기술 분석 모듈 (구현 범위)
+
+> 전체 설계 모듈: 16개  
+> **실제 구현 완료: 1~5번 모듈**
+
+### 모듈 1 — 추세 분석 (Trend)
+- 최근 가격 흐름 기반 추세 판단
+- 상승 / 하락 / 중립 여부 및 강도 해석
+
+### 모듈 2 — 전문가 요약 (Expert Summary)
+- 모듈 1 결과를 바탕으로
+- 사람이 이해하기 쉬운 해설 형태의 분석 제공
+
+### 모듈 3 — 유동성 분석 (Liquidity)
+- 거래량 및 회전율 기반 유동성 상태 해석
+- 진입/이탈 시 주의 포인트 제시
+
+### 모듈 4 — 레인지 & 레벨 분석 (Range & Level)
+- 최근 가격 범위 분석
+- 지지 / 저항 구간에 대한 해석 제공
+
+### 모듈 5 — 주문 흐름 분석 (Orderflow)
+- 단기 캔들 흐름 기반 체결 강도/불균형 추정
+- 단기 변동성 주의 구간 안내
+
+---
+
+## 6. AI 종합 코멘트 로직 (핵심 포인트)
+
+BALRAIN의 AI 종합 코멘트는  
+**“실행된 모듈만을 반영”** 하여 생성됩니다.
+
+예시:
+- 모듈 1만 실행 → 모듈 1 기준 종합 코멘트
+- 모듈 1 + 2 실행 → 두 모듈을 반영한 코멘트
+- 모듈 1~5 실행 → 5개 모듈 전체 반영
+
+이를 통해  
+- 분석 범위를 명확히 하고  
+- 과도한 AI 추론을 방지하며  
+- 향후 모듈 확장에 유연한 구조를 유지합니다.
+
+---
+
+## 7. 기술 구조 
+
+### 7.1 설계 구조 개요
+- **Spec (프롬프트 설계)**  
+  → AI에게 어떤 형식으로 답변할지 정의
+- **Service (AI 호출)**  
+  → API 호출 및 응답 처리
+- **Model (데이터 구조)**  
+  → JSON 응답을 Dart 객체로 변환
+- **UI Widget**  
+  → 카드 형태로 분석 결과 시각화
+
+---
+
+## 8. 프롬프트 설계 특징 (AI 활용 요소)
+
+- 모든 AI 응답은 **JSON 형식으로 강제**
+- 출력 필드 예시:
+  - 분석 요약
+  - 핵심 포인트
+  - 리스크 주의사항
+  - 해석 가이드
+- 토큰 사용량을 줄이기 위해
+  - 원시 데이터 → 요약 데이터 → AI 입력 구조 채택
+
+👉 단순 “AI에게 물어보는 방식”이 아니라  
+**출력 안정성과 재사용성을 고려한 프롬프트 설계**를 목표로 함
+
+---
+
+## 9. 실행 방법
+
+### 9.1 실행 환경
+- Flutter SDK
+- Android Emulator 또는 실제 디바이스
+
+### 9.2 실행
+```bash
+flutter pub get
+flutter run
+
+### 9.3 AI API 키 설정
+flutter run --dart-define=FINNHUB_TOKEN=d49g8o9r01qshn3m6gt0d49g8o9r01qshn3m6gtg --dart-define=GEMINI_API_KEY=AIzaSyDHVOsskzvDvZbho6j6PzcvcASyeEKvSj0
